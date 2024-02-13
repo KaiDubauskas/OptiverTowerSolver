@@ -1,5 +1,36 @@
 from collections import deque
 
+class Tests():
+    def test_applymoves(self):
+        tower = [['1', '2', '3'], [None, None, None], [None, None, None]]
+        moves = [(0, 1), (0, 2), (0, 2), (1, 0)]
+        goal = [[None, None, '1'], [None, None, None], [None, '3', '2']]
+        assert apply_moves(tower, moves) == goal
+        
+    def test_bfs1(self):
+        initial = [['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
+        goal = [['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
+        num_moves = 6
+        assert TowerPuzzle(initial, goal).bfs()[0] == num_moves
+
+    def test_bfs2(self):
+        initial = [[None, '1', '2'], [None, None, '3'], [None, None, None]]
+        goal = [[None, None, None], [None, None, None], ['2', '3', '1']]
+        num_moves = 3
+        assert TowerPuzzle(initial, goal).bfs()[0] == num_moves
+    
+    def test_bfs3(self):
+        initial = [[None, None, None, None], ['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
+        goal = [[None, None, None, None], ['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
+        num_moves = 6
+        assert TowerPuzzle(initial, goal).bfs()[0] == num_moves
+
+    def test_bfs4(self):
+        initial = [[None, None, None, None], ['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
+        goal = [[None, None, None, '14'], ['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, None, '13', '12']]
+        num_moves = 7
+        assert TowerPuzzle(initial, goal).bfs()[0] == num_moves
+
 
 class TowerPuzzle:
     def __init__(self, initial_towers, goal_towers):
@@ -76,33 +107,11 @@ def apply_moves(tower, moves):
     return tower
 
 
-def run_tests():
 
-    test_bfs1 = {
-        "initial": [['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']],
-        "goal": [['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']],
-        "num_moves": 6
-    }
-    test_bfs2 = {
-        "initial": [[None, '1', '2'], [None, None, '3'], [None, None, None]],
-        "goal": [[None, None, None], [None, None, None], ['2', '3', '1']], 
-        "num_moves": 3
-    }
-
-    test_applyMoves = {
-        "tower": [['1', '2', '3'], [None, None, None], [None, None, None]],
-        "moves": [(0, 1), (0, 2), (0, 2), (1, 0)],
-        "goal": [[None, None, '1'], [None, None, None], [None, '3', '2']]
-    }
-
-    assert(apply_moves(test_applyMoves["tower"], test_applyMoves["moves"]) == test_applyMoves["goal"])
-    assert(TowerPuzzle(test_bfs1["initial"], test_bfs1["goal"]).bfs()[0] == test_bfs1["num_moves"])
-    assert(TowerPuzzle(test_bfs2["initial"], test_bfs2["goal"]).bfs()[0] == test_bfs2["num_moves"])
-
-    print("All Tests Passed")
 
 if __name__ == "__main__":
-    run_tests()
+
+    # run_tests()
 
     # print("How many towers are there?")
     # num_towers = int(input())
@@ -120,8 +129,11 @@ if __name__ == "__main__":
     # print(initial_tower_grid)
     # print("\n\nGOAL\n")
     # print(goal_tower_grid)
-    # tp = TowerPuzzle(initial_tower_grid, goal_tower_grid)
+    # tp = TowerPuzzle([[None, None, None, None], ['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']],
+    #  [[None, None, None, '14'], ['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, None, '13', '12']])
     # print(tp.bfs())
+
+    print("k")
     
 
     # print(tp)
