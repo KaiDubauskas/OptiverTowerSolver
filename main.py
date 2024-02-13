@@ -38,7 +38,6 @@ class TowerPuzzle:
                             queue.append((new_state_tuple, new_path))
                             reached.add(new_state_tuple)
                     
-
 def get_tower_input(num_towers, max_height):
     tower_grid = []
     for tower in range(num_towers):
@@ -62,40 +61,67 @@ def print_intermediate_tower(tower_grid, num_towers, max_height):
         output+="\n"
     print(output)
 
+def apply_moves(tower, moves):
+    
+    for i, (curr_tower, next_tower) in enumerate(moves):
+        if curr_tower == next_tower or tower[next_tower][0] != None or tower[curr_tower][-1] == None:
+            raise Exception(f"Invalid set of moves. Error found on move {i} (0-indexed)")
+        
+        curr_top_elem_idx = next((i for i, x in enumerate(tower[curr_tower]) if x is not None), None)
+        next_opening_idx = next((i for i, x in enumerate(tower[next_tower]) if x is not None), len(tower[next_tower])) - 1
+
+        tower[next_tower][next_opening_idx] = tower[curr_tower][curr_top_elem_idx]
+        tower[curr_tower][curr_top_elem_idx] = None
+    
+    return tower
+
+
 def run_tests():
-    test1 = ([['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']], 
-            [['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']], 
-            6)
 
-    test2 = ([[None, '1', '2'], [None, None, '3'], [None, None, None]], 
-            [[None, None, None], [None, None, None], ['2', '3', '1']], 
-            3)
+    test_bfs1 = {
+        "initial": [['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']],
+        "goal": [['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']],
+        "num_moves": 6
+    }
+    test_bfs2 = {
+        "initial": [[None, '1', '2'], [None, None, '3'], [None, None, None]],
+        "goal": [[None, None, None], [None, None, None], ['2', '3', '1']], 
+        "num_moves": 3
+    }
 
-    assert(TowerPuzzle(test1[0], test1[1]).bfs()[0] == test1[2])
-    assert(TowerPuzzle(test2[0], test2[1]).bfs()[0] == test2[2])
+    test_applyMoves = {
+        "tower": [['1', '2', '3'], [None, None, None], [None, None, None]],
+        "moves": [(0, 1), (0, 2), (0, 2), (1, 0)],
+        "goal": [[None, None, '1'], [None, None, None], [None, '3', '2']]
+    }
+
+    assert(apply_moves(test_applyMoves["tower"], test_applyMoves["moves"]) == test_applyMoves["goal"])
+    assert(TowerPuzzle(test_bfs1["initial"], test_bfs1["goal"]).bfs()[0] == test_bfs1["num_moves"])
+    assert(TowerPuzzle(test_bfs2["initial"], test_bfs2["goal"]).bfs()[0] == test_bfs2["num_moves"])
+
     print("All Tests Passed")
 
 if __name__ == "__main__":
-    # run_tests()
+    run_tests()
 
-    print("How many towers are there?")
-    num_towers = int(input())
+    # print("How many towers are there?")
+    # num_towers = int(input())
 
-    print("What is the max amount of blocks (height) for each tower?")
-    max_height = int(input())
+    # print("What is the max amount of blocks (height) for each tower?")
+    # max_height = int(input())
 
-    print("CREATE INITIAL TOWER")
-    initial_tower_grid = get_tower_input(num_towers, max_height)
-    print("CREATE GOAL TOWER")
-    goal_tower_grid = get_tower_input(num_towers, max_height)
+    # print("CREATE INITIAL TOWER")
+    # initial_tower_grid = get_tower_input(num_towers, max_height)
+    # print("CREATE GOAL TOWER")
+    # goal_tower_grid = get_tower_input(num_towers, max_height)
 
 
-    print("\n\nINITIAL\n")
-    print(initial_tower_grid)
-    print("\n\nGOAL\n")
-    print(goal_tower_grid)
-    tp = TowerPuzzle(initial_tower_grid, goal_tower_grid)
-    print(tp.bfs())
+    # print("\n\nINITIAL\n")
+    # print(initial_tower_grid)
+    # print("\n\nGOAL\n")
+    # print(goal_tower_grid)
+    # tp = TowerPuzzle(initial_tower_grid, goal_tower_grid)
+    # print(tp.bfs())
     
-    
+
     # print(tp)
