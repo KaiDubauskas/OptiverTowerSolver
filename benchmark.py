@@ -1,6 +1,3 @@
-from main import TowerPuzzle, apply_moves
-from time import time 
-
 """
 Each search algorithm ran 3x for each puzzle and average of results was taken
 
@@ -31,6 +28,9 @@ I should look at the starting evaluation score since 11 moves can mean very diff
 the position of 3 disks or 8 disks
 
 """
+from main import TowerPuzzle, apply_moves
+from time import time
+
 initial0 = [[None, None, '1', '2', '3'], [None, None, None, '4', '5'], [None, None, None, '6', '7']]
 goal0 = [['7', '6', '2', '1', '3'], [None, None, None, None, '5'], [None, None, None, None, '4']]
 tp0 = TowerPuzzle(initial0, goal0)
@@ -52,7 +52,7 @@ initial4 = [[None, None, '1', '2', '3'], [None, None, '4', '5', '6'], [None, Non
 goal4 = [[None, None, None, '3', '7'], [None, None, '9', '10', '1'], [None, None, '5', '6', '8'], [None, None, '11', '4', '2']]
 tp4 = TowerPuzzle(initial4, goal4)
 
-def timer_func(func):
+def timer(func):
     def wrap_func(*args, **kwargs): 
         sum = 0
         for i in range(3):
@@ -63,15 +63,15 @@ def timer_func(func):
         return sum / 3.0
     return wrap_func
     
-@timer_func
+@timer
 def benchmark_bfs(tower_puzzle):
     tower_puzzle.bfs()
 
-@timer_func
+@timer
 def benchmark_greedy(tower_puzzle):
     tower_puzzle.greedy()
 
-@timer_func
+@timer
 def benchmark_astar(tower_puzzle):
     tower_puzzle.a_star()
 

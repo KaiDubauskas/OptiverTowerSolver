@@ -156,35 +156,22 @@ def get_tower_from_input():
     print("CREATE GOAL TOWER")
     goal_tower_grid = get_tower_input(num_towers, max_height)
 
-
-    print("\n\nINITIAL\n")
-    print(initial_tower_grid)
-    print("\n\nGOAL\n")
-    print(goal_tower_grid)
     return TowerPuzzle(initial_tower_grid, goal_tower_grid)
 
 if __name__ == "__main__":
-    # tp = get_tower_from_input()
-
-    # tp = TowerPuzzle(
-    #     [[None, None, None, '2', '3'], [None, '1', '4', '5', '6'], [None, None, '7', '8', '9']],
-    #     [[None, '7', '8', '2', '3'], [None, None, None, '4', '6'], [None, None, '5', '1', '9']]
-    # )
-    tp = TowerPuzzle(
-        [[None, None, '1', '2', '3'], [None, None, None, '4', '5'], [None, None, None, '6', '7']],
-        [['7', '6', '2', '1', '3'], [None, None, None, None, '5'], [None, None, None, None, '4']]
-    )
+    tp = get_tower_from_input()
     
-    # print(tp.eval(
-    #     [[None, '3', '4', '1'], ['11', '7', '6', '5'], [None, '2', '10', '9'], [None, '14', '13', '12']]
-    # ))
-    print(tp.bfs())
-    # print(apply_moves(
-    #     [[None, None, '1', '2', '3'], [None, None, '4', '5', '6'], [None, None, '7', '8', '9'], [None, None, None, '10', '11']],
-    #     [(0, 3), (1, 2), (0, 2), (1, 0), (1, 0), (3, 1), (3, 1), (3, 1), (2, 3), (2, 3), (1, 3), (2, 3), (2, 0), (2, 1), (0, 2), (0, 2), (0, 2), (0, 1), (3, 0), (1, 0)]
-    # ))
+    print("Calculating...\n")
+    print("(Sit tight! This may take a minute)\n")
+    
+    res = tp.a_star()
+
+    print(f"Min moves: {res[0]}\n\n")
+    print("(note: towers are 0 indexed)\n")
+    for i,move in enumerate(res[1]):
+        print(f"Move #{i+1}: {move[0]} --> {move[1]}\n")
+    print("\n")
+    
 
 
-    # initial = [['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
-    #     goal = [['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
-
+    
