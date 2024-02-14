@@ -1,4 +1,6 @@
 from collections import deque
+import heapq
+import random
 
 class Tests():
     def test_applymoves1(self):
@@ -33,6 +35,24 @@ class Tests():
         goal = [[None, '2', '3', '1'], [None, '4', '7', '6'], [None, None, None, '5'], [None, None, None, None]]
         num_moves = 11
         assert TowerPuzzle(initial, goal).bfs()[0] == num_moves
+    
+    def test_heuristic1(self):
+        initial = [[None, None, None, None], ['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
+        goal = [[None, None, None, '14'], ['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, None, '13', '12']]
+        num_moves = 7
+        assert TowerPuzzle(initial, goal).greedy()[0] == num_moves
+    
+    def test_heuristic2(self):
+        initial = [[None, '3', '2', '1'], [None, '6', '5', '4'], [None, None, None, '7'], [None, None, None, None]]
+        goal = [[None, '2', '3', '1'], [None, '4', '7', '6'], [None, None, None, '5'], [None, None, None, None]]
+        num_moves = 11
+        assert TowerPuzzle(initial, goal).greedy()[0] == num_moves
+
+    def test_heuristic3(self):
+        initial = [[None, None, '1', '2', '3'], [None, None, '4', '5', '6'], [None, None, '7', '8', '9'], [None, None, None, '10', '11']]
+        goal = [[None, None, None, '3', '7'], [None, None, '9', '10', '1'], [None, None, '5', '6', '8'], [None, None, '11', '4', '2']]
+        num_moves = 19
+        assert TowerPuzzle(initial, goal).greedy()[0] == num_moves
 
     # def test_heuristic(self):
     #     initial = [[None, None, '1', '2', '3'], [None, None, '4', '5', '6'], [None, None, '7', '8', '9'], [None, None, None, '10', '11']]
@@ -40,7 +60,6 @@ class Tests():
     #     num_moves = 11
     #     assert TowerPuzzle(initial, goal).bfs()[0] == num_moves
     
-
 
 class TowerPuzzle:
     def __init__(self, initial_towers, goal_towers):
@@ -55,8 +74,6 @@ class TowerPuzzle:
 
     # queue<state, path>
     def bfs(self):
-        # initial_state_tuple = (tuple(tuple(tower) for tower in self.initial_towers))
-        # goal = (tuple(tuple(tower) for tower in self.goal_towers))
         queue = deque([ (self.initial_state, []) ])
         reached = set([self.initial_state])
         
@@ -89,6 +106,33 @@ class TowerPuzzle:
                     num_same += 1
         return num_same
         
+
+    def greedy(self):
+        hp = [(self.eval(self.initial_state), random.random(), 0, self.initial_state, [])]
+        reached = set([self.initial_state])
+
+        while hp:
+            _, _, depth, state, path = heapq.heappop(hp)
+            for i,curr_tower in enumerate(state):
+                for j,next_tower in enumerate(state):
+                    if i != j and next_tower[0] == None and curr_tower[-1] != None:
+                        curr_top_elem_idx = next((i for i, x in enumerate(curr_tower) if x is not None), None)
+                        next_opening_idx = next((i for i, x in enumerate(next_tower) if x is not None), len(next_tower)) - 1
+                        
+                        new_state = [list(tower) for tower in state]
+                        new_state[j][next_opening_idx] = new_state[i][curr_top_elem_idx]
+                        new_state[i][curr_top_elem_idx] = None
+
+                        new_path = path + [(i, j)]
+                        new_state_tuple = tuple(tuple(tower) for tower in new_state)
+
+                        if new_state_tuple == self.goal_state:
+                            return (len(new_path), new_path)
+                        elif new_state_tuple not in reached:
+                            heapq.heappush(hp, (self.eval(new_state_tuple)+depth+1, random.random(), depth+1, new_state_tuple, new_path))
+                            reached.add(new_state_tuple)
+    
+
 
 
     # def iddfs(self):
@@ -191,15 +235,20 @@ def get_tower_from_input():
     return TowerPuzzle(initial_tower_grid, goal_tower_grid)
 
 if __name__ == "__main__":
-    tp = get_tower_from_input()
+    # tp = get_tower_from_input()
 
-    # tp = TowerPuzzle(
-    #     [['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']],
-    #     [['2', '3', '4', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
-    # )
+    tp = TowerPuzzle(
+        [[None, None, '1', '2', '3'], [None, None, '4', '5', '6'], [None, None, '7', '8', '9'], [None, None, None, '10', '11']],
+        [[None, None, None, '3', '7'], [None, None, '9', '10', '1'], [None, None, '5', '6', '8'], [None, None, '11', '4', '2']]
+    )
     
     # print(tp.eval(
     #     [[None, '3', '4', '1'], ['11', '7', '6', '5'], [None, '2', '10', '9'], [None, '14', '13', '12']]
+    # ))
+    print(tp.greedy())
+    # print(apply_moves(
+    #     [[None, None, '1', '2', '3'], [None, None, '4', '5', '6'], [None, None, '7', '8', '9'], [None, None, None, '10', '11']],
+    #     [(0, 3), (1, 2), (0, 2), (1, 0), (1, 0), (3, 1), (3, 1), (3, 1), (2, 3), (2, 3), (1, 3), (2, 3), (2, 0), (2, 1), (0, 2), (0, 2), (0, 2), (0, 1), (3, 0), (1, 0)]
     # ))
 
 
