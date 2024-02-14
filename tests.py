@@ -1,8 +1,10 @@
 from main import TowerPuzzle, apply_moves
+import pytest
 
 # Automated tests
 # "pytest tests.py" to run
 
+@pytest.mark.timeout(7)
 class Tests():
     def test_applymoves1(self):
         tower = [['1', '2', '3'], [None, None, None], [None, None, None]]
@@ -59,6 +61,16 @@ class Tests():
         assert (apply_moves(initial, res) == goal)
 
     def test_astar1(self):
+        initial = [[None, '3', '2', '1'], [None, '6', '5', '4'], [None, None, None, '7'], [None, None, None, None]]
+        goal = [[None, '2', '3', '1'], [None, '4', '7', '6'], [None, None, None, '5'], [None, None, None, None]]
+        num_moves = 11
+
+        res = TowerPuzzle(initial, goal).a_star()
+        assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
+
+    
+    @pytest.mark.timeout(120)
+    def test_astar2(self):
         initial = [[None, None, '1', '2', '3'], [None, None, '4', '5', '6'], [None, None, '7', '8', '9'], [None, None, None, '10', '11']]
         goal = [[None, None, None, '3', '7'], [None, None, '9', '10', '1'], [None, None, '5', '6', '8'], [None, None, '11', '4', '2']]
         num_moves = 19
@@ -66,10 +78,4 @@ class Tests():
         res = TowerPuzzle(initial, goal).a_star()
         assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
 
-    def test_astar2(self):
-        initial = [[None, '3', '2', '1'], [None, '6', '5', '4'], [None, None, None, '7'], [None, None, None, None]]
-        goal = [[None, '2', '3', '1'], [None, '4', '7', '6'], [None, None, None, '5'], [None, None, None, None]]
-        num_moves = 11
 
-        res = TowerPuzzle(initial, goal).a_star()
-        assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
