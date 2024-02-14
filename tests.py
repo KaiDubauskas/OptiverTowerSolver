@@ -16,7 +16,7 @@ class Tests():
         num_moves = 6
 
         res = TowerPuzzle(initial, goal).bfs()
-        assert (res[0] == num_moves) and (apply_moves(initial, res[1]) == goal)
+        assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
     
     def test_bfs2(self):
         initial = [[None, None, None, None], ['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
@@ -24,7 +24,7 @@ class Tests():
         num_moves = 6
 
         res = TowerPuzzle(initial, goal).bfs()
-        assert (res[0] == num_moves) and (apply_moves(initial, res[1]) == goal)
+        assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
 
     def test_bfs3(self):
         initial = [[None, None, None, None], ['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
@@ -32,7 +32,7 @@ class Tests():
         num_moves = 7
 
         res = TowerPuzzle(initial, goal).bfs()
-        assert (res[0] == num_moves) and (apply_moves(initial, res[1]) == goal)
+        assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
         
     def test_bfs4(self):
         initial = [[None, '3', '2', '1'], [None, '6', '5', '4'], [None, None, None, '7'], [None, None, None, None]]
@@ -40,7 +40,7 @@ class Tests():
         num_moves = 11
 
         res = TowerPuzzle(initial, goal).bfs()
-        assert (res[0] == num_moves) and (apply_moves(initial, res[1]) == goal)
+        assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
     
     def test_greedy1(self):
         initial = [[None, None, None, None], ['4', '3', '2', '1'], [None, '7', '6', '5'], [None, '11', '10', '9'], [None, '14', '13', '12']]
@@ -48,7 +48,7 @@ class Tests():
         num_moves = 7
 
         res = TowerPuzzle(initial, goal).greedy()
-        assert (apply_moves(initial, res[1]) == goal)
+        assert (apply_moves(initial, res) == goal)
     
     def test_greedy2(self):
         initial = [[None, '3', '2', '1'], [None, '6', '5', '4'], [None, None, None, '7'], [None, None, None, None]]
@@ -56,7 +56,7 @@ class Tests():
         num_moves = 11
 
         res = TowerPuzzle(initial, goal).greedy()
-        assert (apply_moves(initial, res[1]) == goal)
+        assert (apply_moves(initial, res) == goal)
 
     def test_astar1(self):
         initial = [[None, None, '1', '2', '3'], [None, None, '4', '5', '6'], [None, None, '7', '8', '9'], [None, None, None, '10', '11']]
@@ -64,7 +64,7 @@ class Tests():
         num_moves = 19
 
         res = TowerPuzzle(initial, goal).a_star()
-        assert (res[0] == num_moves) and (apply_moves(initial, res[1]) == goal)
+        assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
 
     def test_astar2(self):
         initial = [[None, '3', '2', '1'], [None, '6', '5', '4'], [None, None, None, '7'], [None, None, None, None]]
@@ -72,4 +72,4 @@ class Tests():
         num_moves = 11
 
         res = TowerPuzzle(initial, goal).a_star()
-        assert (res[0] == num_moves) and (apply_moves(initial, res[1]) == goal)
+        assert (len(res) == num_moves) and (apply_moves(initial, res) == goal)
