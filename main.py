@@ -1,12 +1,15 @@
 from typing import List, Tuple, Optional, TypeAlias
 from collections import deque
-import heapq
-import random
+import heapq, random
 
 # Custom types
 TowerPuzzle: TypeAlias = List[List[Optional[int]]]
 MoveList: TypeAlias = List[Tuple[int, int]]
 
+"""
+- Solves the tower rearrangement puzzle (similar to Towers of London or Tower of Hanoi)
+using breadth first search, greedy heuristic search, and the A* algorithm
+"""
 class TowerPuzzle:
     def __init__(self, initial_towers: TowerPuzzle, goal_towers: TowerPuzzle):
         if (len(initial_towers) != len(goal_towers)):
@@ -15,10 +18,10 @@ class TowerPuzzle:
         self.goal_state = (tuple(tuple(tower) for tower in goal_towers))
         self.num_towers = len(initial_towers)
         self.max_height = len(initial_towers[0])
-        # count_not_none = lambda tower: (len(list(filter(lambda x: x != None, tower))))
-        # self.total_numbers = sum(count_not_none(tower) for tower in initial_towers)
 
-    # queue<state, path>
+    
+    # Performs breadth first search from self.initial_state
+    # Returns the sequence of moves to reach the goal state
     def bfs(self) -> MoveList:
         queue = deque([ (self.initial_state, []) ])
         reached = set([self.initial_state])
@@ -31,12 +34,14 @@ class TowerPuzzle:
                         curr_top_elem_idx = next((i for i, x in enumerate(curr_tower) if x is not None), None)
                         next_opening_idx = next((i for i, x in enumerate(next_tower) if x is not None), len(next_tower)) - 1
 
-                        new_state = [list(tower) for tower in state]
+                        new_state = [list(tower) for tower in state] # Convert to list to allow mutability
+                        
+                        # Move the brick
                         new_state[j][next_opening_idx] = new_state[i][curr_top_elem_idx]
                         new_state[i][curr_top_elem_idx] = None
 
-                        new_path = path + [(i, j)]
-                        new_state_tuple = tuple(tuple(tower) for tower in new_state)
+                        new_path = path + [(i, j)] # Add the move to the path
+                        new_state_tuple = tuple(tuple(tower) for tower in new_state) # Convert back to tuple to allow state to be added to heap
 
                         if new_state_tuple == self.goal_state:
                             return new_path
@@ -44,7 +49,10 @@ class TowerPuzzle:
                             queue.append((new_state_tuple, new_path))
                             reached.add(new_state_tuple)
 
-    def eval(self, state: Tuple[Tuple[Optional[int]]]) -> int:
+
+    # Heuristic function for Greedy and A* search
+    # Given a state, it returns the number of blocks that are in the correct place
+    def h_val(self, state: Tuple[Tuple[Optional[int]]]) -> int:
         num_same = 0
         for i in range(self.num_towers):
             for j in range(self.max_height):
@@ -53,10 +61,12 @@ class TowerPuzzle:
         return num_same
         
 
-    # uses a random number to break ties in heap
-    # does not guarantee the shortest path
+    # Greedy heurstic search. Chooses next node based soley on h values
+    # Does not guarantee the shortest path
+    # Returns the sequence of moves to reach the goal state
+    # F value ties are broken randomely
     def greedy(self) -> MoveList:
-        hp = [(self.eval(self.initial_state), random.random(), self.initial_state, [])]
+        hp = [(self.h_val(self.initial_state), random.random(), self.initial_state, [])] # <f value, random number, current state, path>
         reached = set([self.initial_state])
 
         while hp:
@@ -67,25 +77,28 @@ class TowerPuzzle:
                         curr_top_elem_idx = next((i for i, x in enumerate(curr_tower) if x is not None), None)
                         next_opening_idx = next((i for i, x in enumerate(next_tower) if x is not None), len(next_tower)) - 1
                         
-                        new_state = [list(tower) for tower in state]
+                        new_state = [list(tower) for tower in state] # Convert to list to allow mutability
+                        
+                        # Move the brick
                         new_state[j][next_opening_idx] = new_state[i][curr_top_elem_idx]
                         new_state[i][curr_top_elem_idx] = None
 
-                        new_path = path + [(i, j)]
-                        new_state_tuple = tuple(tuple(tower) for tower in new_state)
+                        new_path = path + [(i, j)] # Add the move to the path
+                        new_state_tuple = tuple(tuple(tower) for tower in new_state) # Convert back to tuple to allow state to be added to heap
 
                         if new_state_tuple == self.goal_state:
                             return new_path
                         elif new_state_tuple not in reached:
-                            heapq.heappush(hp, (self.eval(new_state_tuple), random.random(), new_state_tuple, new_path))
+                            heapq.heappush(hp, (self.h_val(new_state_tuple), random.random(), new_state_tuple, new_path))
                             reached.add(new_state_tuple)
     
 
-    # hp <evaluation, tiebreaker, current depth, state, path>
-    # uses order inserted to break ties in the heap
+    # Heurstic search. Chooses next node based h val and current depth: f(n) = g(n) + h(n)
+    # Returns the sequence of moves to reach the goal state
+    # F value ties are broken based on order inserted. (ie nodes seen first will be visited first)
     def a_star(self) -> MoveList:
         order_inserted = 0
-        hp = [(self.eval(self.initial_state), order_inserted, 0, self.initial_state, [])]
+        hp = [(self.h_val(self.initial_state), order_inserted, 0, self.initial_state, [])] # <f value, heap insert number, depth, current state, path>
         reached = set([self.initial_state])
 
         while hp:
@@ -97,12 +110,14 @@ class TowerPuzzle:
                         curr_top_elem_idx = next((i for i, x in enumerate(curr_tower) if x is not None), None)
                         next_opening_idx = next((i for i, x in enumerate(next_tower) if x is not None), len(next_tower)) - 1
                         
-                        new_state = [list(tower) for tower in state]
+                        new_state = [list(tower) for tower in state] # Convert to list to allow mutability
+                        
+                        # Move the brick
                         new_state[j][next_opening_idx] = new_state[i][curr_top_elem_idx]
                         new_state[i][curr_top_elem_idx] = None
 
-                        new_path = path + [(i, j)]
-                        new_state_tuple = tuple(tuple(tower) for tower in new_state)
+                        new_path = path + [(i, j)] # Add the move to the path
+                        new_state_tuple = tuple(tuple(tower) for tower in new_state) # Convert back to tuple to allow state to be added to heap
 
 
                         if new_state_tuple == self.goal_state:
@@ -110,8 +125,9 @@ class TowerPuzzle:
                         elif new_state_tuple not in reached:
                             reached.add(new_state_tuple)
                             order_inserted += 1
-                            heapq.heappush(hp, (self.eval(new_state_tuple)+depth+1, order_inserted, depth+1, new_state_tuple, new_path))
+                            heapq.heappush(hp, (self.h_val(new_state_tuple)+depth+1, order_inserted, depth+1, new_state_tuple, new_path))
 
+# Given dimension of the puzzle, creates a TowerPuzzle state based on user input
 def get_tower_input(num_towers: int, max_height: int) -> TowerPuzzle:
     tower_grid = []
     for tower in range(num_towers):
@@ -124,6 +140,7 @@ def get_tower_input(num_towers: int, max_height: int) -> TowerPuzzle:
         print_intermediate_tower(tower_grid, num_towers, max_height)
     return tower_grid
 
+# Prints puzzle to console
 def print_intermediate_tower(tower_grid: TowerPuzzle, num_towers: int, max_height: int) -> None:
     output = "\n"
     for h in range(num_towers):
@@ -135,7 +152,7 @@ def print_intermediate_tower(tower_grid: TowerPuzzle, num_towers: int, max_heigh
         output+="\n"
     print(output)
 
-
+# Creates initial and goal tower states based on user input
 def get_tower_from_input() -> None:
     print("How many towers are there?")
     num_towers = int(input())
@@ -150,7 +167,8 @@ def get_tower_from_input() -> None:
 
     return TowerPuzzle(initial_tower_grid, goal_tower_grid)
 
-def apply_moves(tower: TowerPuzzle, moves: MoveList):
+# Given a puzzle state and a sequence of moves, applies the moves to the puzzle
+def apply_moves(tower: TowerPuzzle, moves: MoveList) -> TowerPuzzle:
     for i, (curr_tower, next_tower) in enumerate(moves):
         if curr_tower == next_tower or tower[next_tower][0] != None or tower[curr_tower][-1] == None:
             raise Exception(f"Invalid set of moves. Error found on move {i} (0-indexed)")
